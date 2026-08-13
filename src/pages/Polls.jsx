@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../lib/apiClient';
 
+import { useAuth } from '../context/AuthContext';
+
 export default function Polls() {
   const [polls, setPolls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['', '']);
+  const { user } = useAuth();
 
   const fetchPolls = async () => {
     try {
@@ -50,6 +53,13 @@ export default function Polls() {
       fetchPolls();
     }
   };
+
+
+  const handleDeletePoll = async (pollId) => {
+  if (!window.confirm('Delete this poll?')) return;
+  await apiClient.delete(`/polls/${pollId}`);
+  fetchPolls();
+};
 
   if (loading) return <p className="text-gray-500">Loading polls...</p>;
 
@@ -109,8 +119,18 @@ export default function Polls() {
             const totalVotes = poll.options.reduce((sum, o) => sum + o.voteCount, 0);
             return (
               <div key={poll.id} className="bg-white rounded-xl border border-gray-200 p-4">
-                <h3 className="font-semibold text-gray-800 mb-1">{poll.question}</h3>
-                <p className="text-xs text-gray-400 mb-3">by {poll.createdByName}</p>
+                <div className="flex items-start justify-between mb-1">
+  <h3 className="font-semibold text-gray-800">{poll.question}</h3>
+  {poll.createdByUserId === user.id && (
+    <button
+      onClick={() => handleDeletePoll(poll.id)}
+      className="text-red-500 text-xs hover:text-red-700 shrink-0"
+    >
+      🗑️
+    </button>
+  )}
+</div>
+<p className="text-xs text-gray-400 mb-3">by {poll.createdByName}</p>
 
                 <div className="space-y-2">
                   {poll.options.map((opt) => {
