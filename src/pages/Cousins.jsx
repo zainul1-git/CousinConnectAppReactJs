@@ -7,35 +7,25 @@ export default function Cousins() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchCousins = async () => {
-      try {
-        const { data } = await apiClient.get('/cousins');
-        setCousins(data);
-      } catch (err) {
-        setError('Failed to load cousins. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCousins();
+    apiClient
+      .get('/cousins')
+      .then(({ data }) => setCousins(data))
+      .catch(() => setError('Failed to load cousins. Please try again.'))
+      .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return <p className="text-gray-500">Loading cousins...</p>;
-  }
-
-  if (error) {
-    return <p className="text-red-600">{error}</p>;
-  }
+  if (loading) return <p className="text-gray-500">Loading cousins...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-1">👥 Cousins</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-1" style={{ fontFamily: 'var(--font-display)' }}>
+        👥 Cousins
+      </h1>
       <p className="text-gray-500 mb-6">{cousins.length} family members</p>
 
       {cousins.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-400">
+        <div className="bg-white rounded-2xl border border-brand-100 p-8 text-center text-gray-400">
           No cousins have joined yet.
         </div>
       ) : (
@@ -43,16 +33,12 @@ export default function Cousins() {
           {cousins.map((cousin) => (
             <div
               key={cousin.id}
-              className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4"
+              className="bg-white rounded-2xl border border-brand-100 p-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="relative">
-                <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-lg overflow-hidden">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-brand-400 to-brand-700 flex items-center justify-center text-white font-bold text-lg overflow-hidden">
                   {cousin.avatarUrl ? (
-                    <img
-                      src={cousin.avatarUrl}
-                      alt={cousin.fullName}
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={cousin.avatarUrl} alt={cousin.fullName} className="w-full h-full object-cover" />
                   ) : (
                     cousin.fullName.charAt(0).toUpperCase()
                   )}
@@ -65,12 +51,8 @@ export default function Cousins() {
               </div>
               <div>
                 <p className="font-semibold text-gray-800">{cousin.fullName}</p>
-                <p className="text-sm text-gray-500">
-                  {cousin.isOnline ? 'Online' : 'Offline'}
-                </p>
-                {cousin.bio && (
-                  <p className="text-xs text-gray-400 mt-1">{cousin.bio}</p>
-                )}
+                <p className="text-sm text-gray-500">{cousin.isOnline ? 'Online' : 'Offline'}</p>
+                {cousin.bio && <p className="text-xs text-gray-400 mt-1">{cousin.bio}</p>}
               </div>
             </div>
           ))}

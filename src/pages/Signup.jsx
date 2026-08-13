@@ -11,6 +11,10 @@ const initialForm = {
   inviteCode: '',
 };
 
+const inputClass =
+  'w-full px-3 py-2.5 bg-dark-800 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition';
+const labelClass = 'block text-sm font-medium text-gray-300 mb-1';
+
 export default function Signup() {
   const { signup } = useAuth();
   const navigate = useNavigate();
@@ -25,7 +29,6 @@ export default function Signup() {
     e.preventDefault();
     setError('');
 
-    // Basic validation frontend pe
     if (form.password !== form.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -37,7 +40,6 @@ export default function Signup() {
 
     setLoading(true);
     try {
-      // FormData use kar rahe hain kyunki avatar image (file) bhi bhejni hai
       const payload = new FormData();
       Object.entries(form).forEach(([key, value]) => payload.append(key, value));
       if (avatarFile) payload.append('avatar', avatarFile);
@@ -52,119 +54,131 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
-        <h2 className="text-2xl font-bold text-gray-800 mb-1">Join the family 🎉</h2>
-        <p className="text-gray-500 text-sm mb-6">You'll need a cousin invite code to sign up.</p>
+    <div className="min-h-screen relative overflow-hidden bg-dark-900 flex items-center justify-center px-4 py-10">
+      <div className="absolute -top-32 -right-32 w-96 h-96 bg-brand-600 rounded-full blur-3xl opacity-25" />
+      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-brand-400 rounded-full blur-3xl opacity-15" />
 
-        {error && (
-          <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-            {error}
-          </div>
-        )}
+      <div className="relative z-10 w-full max-w-md animate-fade-in-up">
+        <Link to="/" className="flex items-center justify-center gap-2 mb-6 text-white">
+          <span className="text-2xl">👨‍👩‍👧‍👦</span>
+          <span className="font-bold text-lg" style={{ fontFamily: 'var(--font-display)' }}>
+            Cousin Connect
+          </span>
+        </Link>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Cousin Invite Code</label>
-            <input
-              type="text"
-              name="inviteCode"
-              required
-              value={form.inviteCode}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="e.g. FAM-2026-XYZ"
-            />
-          </div>
+        <div className="bg-dark-700/80 backdrop-blur-xl border border-brand-500/20 rounded-2xl p-8 shadow-2xl shadow-brand-900/30">
+          <h2 className="text-2xl font-bold text-white mb-1">Join the family 🎉</h2>
+          <p className="text-gray-400 text-sm mb-6">You'll need a cousin invite code to sign up.</p>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-            <input
-              type="text"
-              name="fullName"
-              required
-              value={form.fullName}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
+          {error && (
+            <div className="mb-4 text-sm text-red-300 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
+              {error}
+            </div>
+          )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              name="email"
-              required
-              value={form.email}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-            <input
-              type="date"
-              name="dob"
-              required
-              value={form.dob}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className={labelClass}>Cousin Invite Code</label>
               <input
-                type="password"
-                name="password"
+                type="text"
+                name="inviteCode"
                 required
-                value={form.password}
+                value={form.inviteCode}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className={inputClass}
+                placeholder="e.g. FAM-2026-XYZ"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm</label>
+              <label className={labelClass}>Full Name</label>
               <input
-                type="password"
-                name="confirmPassword"
+                type="text"
+                name="fullName"
                 required
-                value={form.confirmPassword}
+                value={form.fullName}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className={inputClass}
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Profile Picture <span className="text-gray-400">(optional)</span>
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setAvatarFile(e.target.files[0])}
-              className="w-full text-sm text-gray-600"
-            />
-          </div>
+            <div>
+              <label className={labelClass}>Email</label>
+              <input
+                type="email"
+                name="email"
+                required
+                value={form.email}
+                onChange={handleChange}
+                className={inputClass}
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition disabled:opacity-50"
-          >
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-        </form>
+            <div>
+              <label className={labelClass}>Date of Birth</label>
+              <input
+                type="date"
+                name="dob"
+                required
+                value={form.dob}
+                onChange={handleChange}
+                className={`${inputClass} [color-scheme:dark]`}
+              />
+            </div>
 
-        <p className="text-sm text-gray-500 mt-6 text-center">
-          Already have an account?{' '}
-          <Link to="/login" className="text-indigo-600 font-medium hover:underline">
-            Login
-          </Link>
-        </p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  value={form.password}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Confirm</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  required
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>
+                Profile Picture <span className="text-gray-500">(optional)</span>
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setAvatarFile(e.target.files[0])}
+                className="w-full text-sm text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-brand-600 file:text-white file:text-sm hover:file:bg-brand-500 file:cursor-pointer"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-brand-600 hover:bg-brand-500 text-white py-2.5 rounded-lg font-medium transition disabled:opacity-50 shadow-lg shadow-brand-900/40"
+            >
+              {loading ? 'Creating account...' : 'Create Account'}
+            </button>
+          </form>
+
+          <p className="text-sm text-gray-400 mt-6 text-center">
+            Already have an account?{' '}
+            <Link to="/login" className="text-brand-400 font-medium hover:text-brand-300">
+              Login
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -13,11 +13,18 @@ export default function Dashboard() {
     });
   }, []);
 
+  const handleBirthdayWish = async (userId) => {
+    await apiClient.post(`/notifications/birthday-wish/${userId}`);
+    alert('Birthday wish sent! 🎉');
+  };
+
   if (loading) return <p className="text-gray-500">Loading dashboard...</p>;
+
+  const cardClass = 'bg-white rounded-2xl border border-brand-100 p-5 shadow-sm hover:shadow-md transition-shadow';
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-1">
+      <h1 className="text-2xl font-bold text-gray-800 mb-1" style={{ fontFamily: 'var(--font-display)' }}>
         🏠 Welcome back, {data.welcomeName}!
       </h1>
       <p className="text-gray-500 mb-6">
@@ -25,8 +32,7 @@ export default function Dashboard() {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Upcoming Events */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className={cardClass}>
           <h2 className="font-semibold text-gray-800 mb-3">📅 Upcoming Events</h2>
           {data.upcomingEvents.length === 0 ? (
             <p className="text-sm text-gray-400">No upcoming events</p>
@@ -35,39 +41,43 @@ export default function Dashboard() {
               {data.upcomingEvents.map((e) => (
                 <li key={e.id} className="text-sm text-gray-600 flex justify-between">
                   <span>{e.title}</span>
-                  <span className="text-gray-400">
-                    {new Date(e.eventDate).toLocaleDateString()}
-                  </span>
+                  <span className="text-gray-400">{new Date(e.eventDate).toLocaleDateString()}</span>
                 </li>
               ))}
             </ul>
           )}
-          <Link to="/events" className="text-xs text-indigo-600 font-medium mt-3 inline-block">
+          <Link to="/events" className="text-xs text-brand-600 font-medium mt-3 inline-block hover:text-brand-700">
             View all →
           </Link>
         </div>
 
-        {/* Upcoming Birthdays */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className={cardClass}>
           <h2 className="font-semibold text-gray-800 mb-3">🎂 Upcoming Birthdays</h2>
           {data.upcomingBirthdays.length === 0 ? (
             <p className="text-sm text-gray-400">No birthdays coming up</p>
           ) : (
             <ul className="space-y-2">
               {data.upcomingBirthdays.map((b) => (
-                <li key={b.userId} className="text-sm text-gray-600 flex justify-between">
+                <li key={b.userId} className="text-sm text-gray-600 flex items-center justify-between">
                   <span>{b.fullName}</span>
-                  <span className="text-gray-400">
-                    {b.daysUntil === 0 ? '🎉 Today!' : `in ${b.daysUntil} days`}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">
+                      {b.daysUntil === 0 ? '🎉 Today!' : `in ${b.daysUntil} days`}
+                    </span>
+                    <button
+                      onClick={() => handleBirthdayWish(b.userId)}
+                      className="text-xs text-brand-600 font-medium hover:underline"
+                    >
+                      Send wish
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </div>
 
-        {/* Recent Memories */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className={cardClass}>
           <h2 className="font-semibold text-gray-800 mb-3">📸 Recent Memories</h2>
           {data.recentPosts.length === 0 ? (
             <p className="text-sm text-gray-400">No memories shared yet</p>
@@ -81,13 +91,12 @@ export default function Dashboard() {
               ))}
             </ul>
           )}
-          <Link to="/memories" className="text-xs text-indigo-600 font-medium mt-3 inline-block">
+          <Link to="/memories" className="text-xs text-brand-600 font-medium mt-3 inline-block hover:text-brand-700">
             View all →
           </Link>
         </div>
 
-        {/* Leaderboard Preview */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className={cardClass}>
           <h2 className="font-semibold text-gray-800 mb-3">🏆 Top Leaderboard</h2>
           {data.topLeaders.length === 0 ? (
             <p className="text-sm text-gray-400">No points yet</p>
@@ -95,15 +104,13 @@ export default function Dashboard() {
             <ul className="space-y-2">
               {data.topLeaders.map((l, i) => (
                 <li key={l.userId} className="text-sm text-gray-600 flex justify-between">
-                  <span>
-                    {['🥇', '🥈', '🥉'][i] || `${i + 1}.`} {l.fullName}
-                  </span>
+                  <span>{['🥇', '🥈', '🥉'][i] || `${i + 1}.`} {l.fullName}</span>
                   <span className="text-gray-400">{l.points} pts</span>
                 </li>
               ))}
             </ul>
           )}
-          <Link to="/leaderboard" className="text-xs text-indigo-600 font-medium mt-3 inline-block">
+          <Link to="/leaderboard" className="text-xs text-brand-600 font-medium mt-3 inline-block hover:text-brand-700">
             View all →
           </Link>
         </div>
