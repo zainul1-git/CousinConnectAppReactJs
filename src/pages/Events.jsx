@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../lib/apiClient';
+import { useAuth } from '../context/AuthContext';
 
 export default function Events() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState('');
+
+
+  const { user } = useAuth(); // for delete
 
   const [form, setForm] = useState({
     title: '',
@@ -52,6 +56,23 @@ export default function Events() {
       setError('Failed to RSVP.');
     }
   };
+
+
+
+
+  const handleDeleteEvent = async (eventId) => {
+  if (!window.confirm('Delete this event?')) return;
+  try {
+    await apiClient.delete(`/events/${eventId}`);
+    fetchEvents();
+  } catch (err) {
+    setError('Failed to delete event.');
+  }
+};
+
+
+
+
 
   if (loading) return <p className="text-gray-500">Loading events...</p>;
 
@@ -158,25 +179,32 @@ export default function Events() {
         <div className="space-y-4">
           {events.map((event) => (
             <div key={event.id} className="bg-white rounded-xl border border-gray-200 p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold text-gray-800 text-lg">{event.title}</h3>
-                  <p className="text-sm text-gray-500">
-                    📅 {new Date(event.eventDate).toLocaleDateString()}
-                    {event.eventTime && ` · ⏰ ${event.eventTime}`}
-                  </p>
-                  {event.location && (
-                    <p className="text-sm text-gray-500">📍 {event.location}</p>
-                  )}
-                  {event.description && (
-                    <p className="text-sm text-gray-600 mt-2">{event.description}</p>
-                  )}
-                  <p className="text-xs text-gray-400 mt-2">
-                    Created by {event.createdByName}
-                  </p>
-                </div>
-              </div>
-
+             <div className="flex items-start justify-between">
+  <div>
+    <h3 className="font-semibold text-gray-800 text-lg">{event.title}</h3>
+    <p className="text-sm text-gray-500">
+      📅 {new Date(event.eventDate).toLocaleDateString()}
+      {event.eventTime && ` · ⏰ ${event.eventTime}`}
+    </p>
+    {event.location && (
+      <p className="text-sm text-gray-500">📍 {event.location}</p>
+    )}
+    {event.description && (
+      <p className="text-sm text-gray-600 mt-2">{event.description}</p>
+    )}
+    <p className="text-xs text-gray-400 mt-2">
+      Created by {event.createdByName}
+    </p>
+  </div>
+  {event.createdByUserId === user.id && (
+    <button
+      onClick={() => handleDeleteEvent(event.id)}
+      className="text-red-500 text-sm hover:text-red-700 shrink-0"
+    >
+      🗑️ Delete
+    </button>
+  )}
+</div>
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
                 <p className="text-sm text-gray-600">
                   {event.goingCount > 0

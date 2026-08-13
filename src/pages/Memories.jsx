@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../lib/apiClient';
 
+import { useAuth } from '../context/AuthContext';
 const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'https://localhost:7168/api').replace('/api', '');
 
 export default function Memories() {
@@ -9,6 +10,9 @@ export default function Memories() {
   const [content, setContent] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [commentInputs, setCommentInputs] = useState({});
+
+
+  const { user } = useAuth(); // for delete button
 
   const fetchPosts = async () => {
     try {
@@ -49,6 +53,14 @@ export default function Memories() {
     setCommentInputs({ ...commentInputs, [postId]: '' });
     fetchPosts();
   };
+
+
+
+  const handleDeletePost = async (postId) => {
+  if (!window.confirm('Delete this memory?')) return;
+  await apiClient.delete(`/posts/${postId}`);
+  fetchPosts();
+};
 
   if (loading) return <p className="text-gray-500">Loading memories...</p>;
 
@@ -91,21 +103,32 @@ export default function Memories() {
         <div className="space-y-4">
           {posts.map((post) => (
             <div key={post.id} className="bg-white rounded-xl border border-gray-200 p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold overflow-hidden">
-                  {post.userAvatarUrl ? (
-                    <img src={`${API_ORIGIN}${post.userAvatarUrl}`} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    post.userName.charAt(0).toUpperCase()
-                  )}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800 text-sm">{post.userName}</p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(post.createdAt).toLocaleString()}
-                  </p>
-                </div>
-              </div>
+              <div className="flex items-center justify-between mb-3">
+  <div className="flex items-center gap-3">
+    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold overflow-hidden">
+      {post.userAvatarUrl ? (
+        <img src={`${API_ORIGIN}${post.userAvatarUrl}`} alt="" className="w-full h-full object-cover" />
+      ) : (
+        post.userName.charAt(0).toUpperCase()
+      )}
+    </div>
+    <div>
+      <p className="font-semibold text-gray-800 text-sm">{post.userName}</p>
+      <p className="text-xs text-gray-400">
+        {new Date(post.createdAt).toLocaleString()}
+      </p>
+    </div>
+  </div>
+  {post.userId === user.id && (
+    <button
+      onClick={() => handleDeletePost(post.id)}
+      className="text-red-500 text-xs hover:text-red-700"
+    >
+      🗑️ Delete
+    </button>
+  )}
+</div>
+              
 
               {post.content && <p className="text-gray-700 mb-3">{post.content}</p>}
 
