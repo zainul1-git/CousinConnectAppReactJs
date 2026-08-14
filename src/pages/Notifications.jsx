@@ -80,7 +80,7 @@ export default function Notifications() {
                   {new Date(n.createdAt).toLocaleString()}
                 </p>
               </div>
-              {!n.isRead && <span className="w-1 h-2 rounded-full bg-brand-600 mt-1.5" />}
+              {!n.isRead && <span className="w-2 h-2 rounded-full bg-brand-600 mt-1.5" />}
             </div>
           ))}
         </div>
