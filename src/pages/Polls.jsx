@@ -145,7 +145,7 @@ export default function Polls() {
                         <div className="relative flex justify-between">
                           <span>{opt.optionText}</span>
                           {poll.hasCurrentUserVoted && (
-                            <span className="text-gray-400">{pct}% ({opt.voteCount})</span>
+                            <span className="text-gray-500">{pct}% ({opt.voteCount})</span>
                           )}
                         </div>
                       </button>
