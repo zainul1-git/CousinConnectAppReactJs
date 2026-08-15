@@ -6,7 +6,7 @@ export default function Cousins() {
   const [cousins, setCousins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'https://localhost:7168/api').replace('/api', '');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,7 +41,8 @@ export default function Cousins() {
               <div className="relative shrink-0">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-brand-400 to-brand-700 flex items-center justify-center text-white font-bold text-lg overflow-hidden">
                   {cousin.avatarUrl ? (
-                    <img src={cousin.avatarUrl} alt={cousin.fullName} className="w-full h-full object-cover" />
+                    // <img src={cousin.avatarUrl} alt={cousin.fullName} className="w-full h-full object-cover" />
+                    <img src={`${API_ORIGIN}${cousin.avatarUrl}`} alt={cousin.fullName} className="w-full h-full object-cover" />
                   ) : (
                     cousin.fullName.charAt(0).toUpperCase()
                   )}
