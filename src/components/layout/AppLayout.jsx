@@ -14,6 +14,7 @@ const navItems = [
   { to: '/leaderboard', label: 'Leaderboard', icon: '🏆' },
   { to: '/notifications', label: 'Notifications', icon: '🔔' },
   { to: '/profile', label: 'Profile', icon: '👤' },
+  { to: '/group-chat', label: 'Family Group', icon: '👨‍👩‍👧‍👦' },
 ];
 
 export default function AppLayout() {

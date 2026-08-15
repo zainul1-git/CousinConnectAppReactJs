@@ -148,7 +148,7 @@ import Polls from './pages/Polls';
 import FunZone from './pages/FunZone';
 import Leaderboard from './pages/Leaderboard';
 import Notifications from './pages/Notifications';
-
+import GroupChat from './pages/GroupChat';
 function App() {
   return (
     <AuthProvider>
@@ -172,6 +172,7 @@ function App() {
             <Route path="/funzone" element={<FunZone />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/group-chat" element={<GroupChat />} />
           </Route>
         </Route>
 
