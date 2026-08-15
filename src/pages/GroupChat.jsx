@@ -8,21 +8,31 @@ export default function GroupChat() {
   const [group, setGroup] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const endRef = useRef(null);
   const connRef = useRef(null);
 
   useEffect(() => {
-    apiClient.get('/groupchat/my-group').then(({ data }) => {
-      setGroup(data);
-      apiClient.get(`/groupchat/${data.id}/messages`).then((res) => setMessages(res.data));
-    });
+    apiClient
+      .get('/groupchat/my-group')
+      .then(({ data }) => {
+        setGroup(data);
+        return apiClient.get(`/groupchat/${data.id}/messages`);
+      })
+      .then((res) => setMessages(res.data))
+      .catch((err) => {
+        console.error('GroupChat error:', err);
+        setError('Could not load family group.');
+      })
+      .finally(() => setLoading(false));
 
     const connection = getChatConnection();
     connRef.current = connection;
     connection.on('ReceiveGroupMessage', (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
-    if (connection.state === 'Disconnected') connection.start();
+    if (connection.state === 'Disconnected') connection.start().catch(console.error);
 
     return () => connection.off('ReceiveGroupMessage');
   }, []);
@@ -38,17 +48,9 @@ export default function GroupChat() {
     setText('');
   };
 
-  const askRandomTruth = async () => {
-  const truths = [
-    "What's the most embarrassing thing you've done at a family event?",
-    "Who's your favorite cousin and why?",
-    "What's a secret talent nobody knows about?",
-  ];
-  const q = truths[Math.floor(Math.random() * truths.length)];
-  await connRef.current.invoke('SendGroupMessage', { groupId: group.id, content: `🎭 Truth: ${q}` });
-};
-
-  if (!group) return <p className="text-gray-500">Loading group...</p>;
+  if (loading) return <p className="text-gray-500">Loading group...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
+  if (!group) return <p className="text-gray-500">No group found.</p>;
 
   return (
     <div className="h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] flex flex-col bg-white rounded-2xl border border-brand-100 shadow-sm overflow-hidden">
@@ -83,12 +85,6 @@ export default function GroupChat() {
         <button type="submit" className="bg-brand-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-brand-700">
           Send
         </button>
-
-        <div className="px-4 py-2 border-b border-gray-100">
-  <button onClick={askRandomTruth} className="text-sm text-brand-600 font-medium">
-    🎭 Ask Random Truth
-  </button>
-</div>
       </form>
     </div>
   );
